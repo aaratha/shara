@@ -14,7 +14,7 @@ sections:
   - name: images
     dynamicField:
       - type: images
-        displayType: carousel
+        displayType: lightbox
         images:
           - https://res.cloudinary.com/ittlbjso/image/upload/v1788652664/aseem_ratha.png
     dfSettings:
