@@ -16,9 +16,7 @@ sections:
       - type: images
         displayType: carousel
         images:
-          - https://res.cloudinary.com/ittlbjso/image/upload/v1788649523/cld-sample-5.jpg
-          - https://res.cloudinary.com/ittlbjso/image/upload/v1788649523/main-sample.png
-          - https://res.cloudinary.com/ittlbjso/image/upload/v1788649523/cld-sample-4.jpg
+          - https://res.cloudinary.com/ittlbjso/image/upload/v1788652664/aseem_ratha.png
     dfSettings:
       size: large
       background: dark
