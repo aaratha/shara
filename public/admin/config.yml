@@ -4,19 +4,19 @@ local_backend: false
 
 backend:
   name: git-gateway
-  branch: master # Branch to update (optional; defaults to master)
+  branch: main # Branch to update (optional; defaults to master)
 
 media_folder: "public/upload"
 public_folder: "/"
 
-site_url: https://sailsnake-decapcms.netlify.app
+site_url: https://shara-portfolio.netlify.app
 
 media_library:
   name: cloudinary
   # output_filename_only: true
   config:
     cloud_name: ittlbjso
-    api_key: 737259485678325 
+    api_key: "737259485678325" 
 
 
 # SEO anchor:
