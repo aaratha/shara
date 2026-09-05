@@ -1,5 +1,5 @@
 # disable in production:  
-local_backend: true
+local_backend: false 
 # command to run a local Decap instance: npx-decap-server
 
 backend:
@@ -15,8 +15,8 @@ media_library:
   name: cloudinary
   # output_filename_only: true
   config:
-    cloud_name: <YOUR_CLOUD_NAME_HERE>
-    api_key: <YOUR_API_KEY_HERE> 
+    cloud_name: ittlbjso
+    api_key: 737259485678325 
 
 
 # SEO anchor:
@@ -32,6 +32,93 @@ seo: &seo
     - { name: "keywords", label: "keywords", widget: "string", hint: "keywords are comma seperated", required: false }
 
 
+
+# Dynamic fields anchors. These define the reusable editor blocks below.
+dfImages: &dfImages
+  name: "images"
+  label: "Images"
+  widget: "image"
+  choose_url: true
+  media_library:
+    config:
+      multiple: true
+
+dfImage: &dfImage
+  name: "image"
+  label: "Image"
+  widget: "image"
+  choose_url: true
+  media_library:
+    config:
+      multiple: false
+
+dfVideo: &dfVideo
+  name: "video"
+  label: "Video"
+  widget: "file"
+  choose_url: true
+  media_library:
+    config:
+      multiple: false
+
+dfAudio: &dfAudio
+  name: "audio"
+  label: "Audio"
+  widget: "file"
+  choose_url: true
+  media_library:
+    config:
+      multiple: false
+
+dfText: &dfText
+  name: "dfText"
+  label: "Text"
+  widget: "markdown"
+
+dfSettings: &dfSettings
+  name: "dfSettings"
+  label: "Settings"
+  widget: "object"
+  required: true
+  fields:
+    - { name: "size", label: "Size", widget: "select", options: ["small", "large"] }
+    - { name: "background", label: "Background", widget: "select", options: ["dark", "light"] }
+
+dynamicFields: &dynamicFields
+  name: "dynamicField"
+  label: "Content blocks"
+  widget: "list"
+  required: true
+  types:
+    - name: "text"
+      label: "Text"
+      widget: "object"
+      fields:
+        - *dfText
+    - name: "image"
+      label: "Single image"
+      widget: "object"
+      fields:
+        - *dfImage
+    - name: "images"
+      label: "Image gallery"
+      widget: "object"
+      fields:
+        - *dfImages
+        - { name: "displayType", label: "Display", widget: "select", options: ["carousel", "lightbox"], default: "carousel" }
+    - name: "video"
+      label: "Video"
+      widget: "object"
+      fields:
+        - *dfVideo
+        - { name: "autoplay", label: "Autoplay", widget: "boolean", default: false }
+        - { name: "muted", label: "Muted", widget: "boolean", default: false }
+        - { name: "loop", label: "Loop", widget: "boolean", default: false }
+    - name: "audio"
+      label: "Audio"
+      widget: "object"
+      fields:
+        - *dfAudio
 
 collections:
   - name: "globalContent"
@@ -75,6 +162,20 @@ collections:
         fields:
           - { name: "title", label: "Title", widget: "string" }
           - { name: "content", label: "Content", widget: "markdown" }
+      - name: "dynamicFields"
+        label: "Dynamic Fields"
+        file: "content/pages/dynamic-fields.md"
+        fields:
+          - { name: "title", label: "Title", widget: "string" }
+          - name: "sections"
+            label: "Sections"
+            widget: "list"
+            label_singular: "Section"
+            fields:
+              - { name: "name", label: "Section name", widget: "string" }
+              - *dynamicFields
+              - *dfSettings
+          - *seo
       - name: "Fiddly diddlies"
         label: "diddlies"
         extension: json
@@ -86,4 +187,3 @@ collections:
      
 
           
-
