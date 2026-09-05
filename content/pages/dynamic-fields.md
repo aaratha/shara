@@ -19,6 +19,9 @@ sections:
           - https://res.cloudinary.com/ittlbjso/image/upload/v1788649523/cld-sample-5.jpg
           - https://res.cloudinary.com/ittlbjso/image/upload/v1788649523/main-sample.png
           - https://res.cloudinary.com/ittlbjso/image/upload/v1788649523/cld-sample-4.jpg
+    dfSettings:
+      size: large
+      background: dark
 SEOmetaData:
   metaTitle: Dynamic Fields
   metaDescription: Build flexible, editor-managed pages from dynamic content blocks.
