@@ -21,7 +21,7 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		public: {
 			// set your cloudinary env url (used to built responsive assets links)
-			cloudinaryEnvUrl: 'https://res.cloudinary.com/sailsnake-api-test',
+			cloudinaryEnvUrl: 'https://res.cloudinary.com/ittlbjso',
 		}
 	},
 	css: [
