@@ -8,15 +8,9 @@
 	footer {
 		position: relative;
 		height: max-content;
-		margin: $spacing7 $spacing4 $spacing4;
-		color: $grey;
+		margin: clamp($spacing4, 5vw, $spacing7) clamp($spacing2, 4vw, $spacing4) $spacing2;
+		color: var(--muted-text-color);
 		font-size: $font-size8;
-		@include media(xsm) {
-			display: block;
-			height: auto;
-			margin-top: $spacing2;
-			margin-inline: 0;
-		}
 	}
 
 </style>

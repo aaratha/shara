@@ -5,9 +5,10 @@
 <style lang="scss" scoped>
 .company-logo {
 	margin: 0;
-	font-family: $font-accent;
-	font-size: $font-size4;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
+	color: var(--text-color);
+	font-family: $font-main;
+	font-size: clamp(1.5rem, 3vw, 2.25rem);
+	font-weight: 600;
+	letter-spacing: 0.02em;
 }
 </style>

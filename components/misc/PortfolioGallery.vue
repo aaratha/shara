@@ -163,9 +163,11 @@ onBeforeUnmount(() => {
 	border: 1px solid rgba($white, 0.7);
 	border-radius: 50%;
 	background: transparent;
+	color: $white;
 	font-size: 2rem;
 	line-height: 1;
 	cursor: pointer;
+	mix-blend-mode: difference;
 }
 
 :global(body.lightbox-open) {

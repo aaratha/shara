@@ -13,10 +13,22 @@ html {
 	margin: 0;
 	font-size: 15px; // 11pt
 	font-family: $font-main;
+	--surface-color: #{$white};
+	--text-color: #{$dark-grey};
+	--muted-surface-color: #{$light-grey};
+	--muted-text-color: #{$grey};
 	// responsive upscaling for resolutions > 1920px
 	@include media(xlg) {
 		font-size: clamp(15px, 0rem + 0.7813vw, 30px);
 	}
+
+}
+
+html.dark-mode {
+	--surface-color: #{$dark-grey};
+	--text-color: #{$white};
+	--muted-surface-color: #{$black};
+	--muted-text-color: #{$light-grey};
 }
 
 // SCROLLBAR 
@@ -43,13 +55,15 @@ a {
 
 html,
 body {
-	height: 100vh;
+	min-height: 100%;
 	width: 100%;
 	//==
 	margin: 0;
 	padding: 0;
 	//==
 	font-family: $font-main;
+	background: var(--surface-color);
+	color: var(--text-color);
 }
 
 body {
@@ -75,10 +89,10 @@ body * {
 .layout-wrapper {
 	position: relative;
 	width: 100%;
-	min-height: 100vh;
+	min-height: 100dvh;
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: max-content minmax(0, 1fr) max-content;
+	grid-template-rows: auto 1fr auto;
 	header {
 		grid-row: 1;
 	}
@@ -86,7 +100,7 @@ body * {
 		position: relative;
 		grid-row: 2;
 		main {
-			min-height: 100%;
+			min-height: 0;
 			a {
 				color: $base-color;
 			}
@@ -96,4 +110,3 @@ body * {
 		grid-row: 3;
 	}
 }
-

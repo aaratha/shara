@@ -1,7 +1,6 @@
 <template>
 	<main id="main" class="portfolio-home">
 		<header class="portfolio-intro">
-			<p class="portfolio-intro__eyebrow font-accent text-muted">Selected work</p>
 			<h1>{{ portfolio?.title || 'Portfolio' }}</h1>
 		</header>
 
@@ -25,23 +24,23 @@ if (portfolio.value?.SEOmetaData) {
 }
 
 .portfolio-intro {
-	margin: 0 auto clamp($spacing4, 6vw, $spacing7);
-	max-width: 72rem;
+	margin: clamp($spacing4, 8vw, $spacing8) auto clamp($spacing4, 6vw, $spacing7);
+	max-width: 90rem;
 	padding-inline: clamp($spacing2, 4vw, $spacing4);
-}
-
-.portfolio-intro__eyebrow {
-	margin: 0 0 $spacing1;
-	font-size: $font-size8;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
 }
 
 h1 {
 	margin: 0;
-	font-size: clamp(2.8rem, 8vw, 7rem);
+	color: var(--text-color);
+	font-family: $font-main;
+	font-size: clamp(3rem, 10vw, 7rem);
 	font-weight: 400;
-	line-height: 0.9;
+	line-height: 1;
+	text-align: left;
+
+	&::before {
+		display: none;
+	}
 }
 
 :deep(.portfolio-gallery) {

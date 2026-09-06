@@ -6,7 +6,7 @@
 $white: #fff;
 $light-grey: #E5E4E2;
 $grey: #A9A9A9;
-$dark-grey: #36454F;
+$dark-grey: #2f393e;
 $black: #1B1212; 
 $base-color: #ff0080;
 $secondary-color: #1ba673; 
@@ -28,7 +28,7 @@ $font-art: 'Tiffany';
 $font-decor: 'Typewriter';
 
 
-//* sizes
+//* Type sizes (root font size is 15px)
 $font-size1: 5.4545rem; // 60pt
 $font-size2: 2.9090rem; // 32pt 
 $font-size3: 2.3636rem; // 26pt
@@ -38,22 +38,20 @@ $font-size6: 1.1818rem; // 13pt
 $font-size7: 1rem; // 11pt // 15px
 $font-size8: 0.9rem; // 10pt ish // 15 * 0.9px
 
-/* SPACING sets
-- 
-- 
+/* SPACING
+   Fixed rem values keep spacing predictable in every component.
 */
 
-$spacing0: 0.1818em; // 2pt
-$spacing1: 0.5454em; // 6pt
-$spacing2: 0.7272em; // 8pt
-$spacing3: 1em; // 11pt
-$spacing4: 1.4545em; // 16pt
-$spacing5: 1.6363em; // 18pt
-$spacing6: 2.3636rem; // 26pt
-$spacing6: 2.9090em; // 32pt
-$spacing7: 3.6363em; // 40pt
-$spacing8: 5.4545em; // 60pt
-$spacing9: 7.4545em; // 82pt
+$spacing0: 0.125rem; // 2px
+$spacing1: 0.5rem; // 8px
+$spacing2: 0.75rem; // 12px
+$spacing3: 1rem; // 16px
+$spacing4: 1.5rem; // 24px
+$spacing5: 1.75rem; // 28px
+$spacing6: 2rem; // 32px
+$spacing7: 2.5rem; // 40px
+$spacing8: 3.75rem; // 60px
+$spacing9: 5rem; // 80px
 
 /* Border radius 
 - 
@@ -82,6 +80,4 @@ $transition3: 727ms cubic-bezier(.83,.7,.65,-0.03);
 $transition4: 1000ms cubic-bezier(.83,.7,.65,-0.03);
 $transition5: 1181ms cubic-bezier(.83,.7,.65,-0.03);
 $transition6: 14545ms cubic-bezier(.83,.7,.65,-0.03);
-
-
 
