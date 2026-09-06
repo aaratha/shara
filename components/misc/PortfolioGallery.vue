@@ -204,7 +204,9 @@ const movePan = (event) => {
 		pointers.set(event.pointerId, { clientX: event.clientX, clientY: event.clientY })
 		const [first, second] = [...pointers.values()]
 		const nextZoom = clampZoom(pinch.zoom * (distanceBetween(first, second) / pinch.distance))
+		const wasZoomed = zoom.value > 1
 		zoom.value = nextZoom
+		if (wasZoomed && nextZoom === 1) settlePan()
 		return
 	}
 
