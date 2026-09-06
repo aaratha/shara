@@ -15,11 +15,25 @@
 		</button>
 	</div>
 
-	<div v-if="selectedImage" class="portfolio-lightbox" role="dialog" aria-modal="true" aria-labelledby="portfolio-lightbox-title" @click="close">
-		<div class="portfolio-lightbox__content" @click.self="close">
+	<div v-if="selectedImage" class="portfolio-lightbox" role="dialog" aria-modal="true" aria-labelledby="portfolio-lightbox-title" @click="handleLightboxClick">
+		<div
+			ref="lightboxContent"
+			class="portfolio-lightbox__content"
+			@wheel.prevent.stop="zoomAtPoint"
+			@pointerdown="startPan"
+			@pointermove="movePan"
+			@pointerup="endPan"
+			@pointercancel="endPan"
+			@dblclick.prevent.stop="toggleZoom"
+		>
 			<h2 id="portfolio-lightbox-title" class="sr-only">Image preview</h2>
 			<button class="portfolio-lightbox__close text-on-dark" type="button" aria-label="Close image preview" @click="close">×</button>
-			<img :src="imageUrl(selectedImage, 'f_auto,w_2200,q_auto')" alt="Expanded portfolio image" @click.stop>
+			<img
+				:src="imageUrl(selectedImage, 'f_auto,w_2200,q_auto')"
+				alt="Expanded portfolio image"
+				:style="previewImageStyle"
+				@click.stop
+			>
 		</div>
 	</div>
 </template>
@@ -44,8 +58,148 @@ const galleryImages = computed(() => props.images
 	.flatMap(imageSource)
 	.filter(Boolean))
 
+const lightboxContent = ref(null)
+const zoom = ref(1)
+const pan = reactive({ x: 0, y: 0 })
+const pointers = new Map()
+const pinch = reactive({ distance: 0, zoom: 1 })
+const didPan = ref(false)
+let wheelFrame = null
+let wheelVelocity = 0
+let wheelPoint = { x: 0, y: 0 }
+
+const previewImageStyle = computed(() => ({
+	transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoom.value})`,
+	cursor: zoom.value > 1 ? (pointers.size ? 'grabbing' : 'grab') : 'zoom-in',
+}))
+
+const clampZoom = (value) => Math.min(4, Math.max(1, value))
+const resetZoom = () => {
+	zoom.value = 1
+	pan.x = 0
+	pan.y = 0
+	pinch.distance = 0
+	wheelVelocity = 0
+	didPan.value = false
+	pointers.clear()
+}
+
+const applyZoomAtPoint = (pointX, pointY, factor) => {
+	const nextZoom = clampZoom(zoom.value * factor)
+	const zoomFactor = nextZoom / zoom.value
+
+	pan.x = pointX - (pointX - pan.x) * zoomFactor
+	pan.y = pointY - (pointY - pan.y) * zoomFactor
+	zoom.value = nextZoom
+	if (nextZoom === 1) {
+		pan.x = 0
+		pan.y = 0
+	}
+}
+
+const animateWheelZoom = () => {
+	wheelVelocity *= 0.82
+	if (Math.abs(wheelVelocity) < 0.001) {
+		wheelVelocity = 0
+		wheelFrame = null
+		return
+	}
+
+	applyZoomAtPoint(wheelPoint.x, wheelPoint.y, Math.exp(wheelVelocity))
+	wheelFrame = requestAnimationFrame(animateWheelZoom)
+}
+
+const isTrackpadGesture = (event) => (
+	event.deltaMode === 0 &&
+	(Math.abs(event.deltaX) > 0 || Math.abs(event.deltaY) < 50 || !Number.isInteger(event.deltaY))
+)
+
+const zoomAtPoint = (event) => {
+	const rect = lightboxContent.value?.getBoundingClientRect()
+	if (!rect) return
+
+	const pointX = event.clientX - (rect.left + rect.width / 2)
+	const pointY = event.clientY - (rect.top + rect.height / 2)
+
+	if (isTrackpadGesture(event)) {
+		if (event.ctrlKey) {
+			applyZoomAtPoint(pointX, pointY, Math.exp(-event.deltaY * 0.01))
+		} else if (zoom.value > 1) {
+			pan.x -= event.deltaX
+			pan.y -= event.deltaY
+		}
+		return
+	}
+
+	wheelPoint = { x: pointX, y: pointY }
+	wheelVelocity += event.deltaY < 0 ? 0.075 : -0.075
+	if (!wheelFrame) wheelFrame = requestAnimationFrame(animateWheelZoom)
+}
+
+const toggleZoom = (event) => {
+	if (zoom.value > 1) {
+		resetZoom()
+		return
+	}
+
+	const rect = lightboxContent.value?.getBoundingClientRect()
+	if (!rect) return
+	const pointX = event.clientX - (rect.left + rect.width / 2)
+	const pointY = event.clientY - (rect.top + rect.height / 2)
+	zoom.value = 2
+	pan.x = -pointX
+	pan.y = -pointY
+}
+
+const distanceBetween = (first, second) => Math.hypot(first.clientX - second.clientX, first.clientY - second.clientY)
+
+const startPan = (event) => {
+	event.preventDefault()
+	didPan.value = false
+	pointers.set(event.pointerId, { clientX: event.clientX, clientY: event.clientY })
+	if (pointers.size === 2) {
+		const [first, second] = [...pointers.values()]
+		pinch.distance = distanceBetween(first, second)
+		pinch.zoom = zoom.value
+	}
+	event.currentTarget?.setPointerCapture?.(event.pointerId)
+}
+
+const movePan = (event) => {
+	if (!pointers.has(event.pointerId)) return
+	const previous = pointers.get(event.pointerId)
+
+	if (pointers.size === 2 && pinch.distance) {
+		pointers.set(event.pointerId, { clientX: event.clientX, clientY: event.clientY })
+		const [first, second] = [...pointers.values()]
+		const nextZoom = clampZoom(pinch.zoom * (distanceBetween(first, second) / pinch.distance))
+		zoom.value = nextZoom
+		return
+	}
+
+	if (zoom.value <= 1) return
+	if (Math.abs(event.clientX - previous.clientX) > 1 || Math.abs(event.clientY - previous.clientY) > 1) {
+		didPan.value = true
+	}
+	pan.x += event.clientX - previous.clientX
+	pan.y += event.clientY - previous.clientY
+	pointers.set(event.pointerId, { clientX: event.clientX, clientY: event.clientY })
+}
+
+const endPan = (event) => {
+	pointers.delete(event.pointerId)
+	event.currentTarget?.releasePointerCapture?.(event.pointerId)
+}
+
 const imageUrl = (url, transformation) => cldDelivery(url, transformation)
 const close = () => { selectedImage.value = null }
+const handleLightboxClick = () => {
+	if (didPan.value) {
+		didPan.value = false
+		return
+	}
+	close()
+}
 
 const onKeydown = (event) => {
 	if (event.key === 'Escape') close()
@@ -53,12 +207,14 @@ const onKeydown = (event) => {
 
 watch(selectedImage, (image) => {
 	document.body.classList.toggle('lightbox-open', Boolean(image))
+	if (image) nextTick(resetZoom)
 })
 
 onMounted(() => window.addEventListener('keydown', onKeydown))
 onBeforeUnmount(() => {
 	window.removeEventListener('keydown', onKeydown)
 	document.body.classList.remove('lightbox-open')
+	if (wheelFrame) cancelAnimationFrame(wheelFrame)
 })
 </script>
 
@@ -139,6 +295,8 @@ onBeforeUnmount(() => {
 	min-width: 0;
 	min-height: 0;
 	margin: auto;
+	overflow: hidden;
+	touch-action: none;
 
 	img {
 		display: block;
@@ -149,7 +307,9 @@ onBeforeUnmount(() => {
 		max-height: 100%;
 		margin: auto;
 		object-fit: contain;
-		cursor: default;
+		user-select: none;
+		-webkit-user-drag: none;
+		will-change: transform;
 	}
 }
 
