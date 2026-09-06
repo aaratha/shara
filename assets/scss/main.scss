@@ -17,6 +17,7 @@ html {
 	--text-color: #{$dark-grey};
 	--muted-surface-color: #{$light-grey};
 	--muted-text-color: #{$grey};
+	--gallery-shadow: 0 1.5rem 3.5rem rgba(23, 25, 26, 0.2), 0 0.35rem 0.9rem rgba(23, 25, 26, 0.12);
 	// responsive upscaling for resolutions > 1920px
 	@include media(xlg) {
 		font-size: clamp(15px, 0rem + 0.7813vw, 30px);
@@ -29,6 +30,7 @@ html.dark-mode {
 	--text-color: #{$white};
 	--muted-surface-color: #{$black};
 	--muted-text-color: #{$light-grey};
+	--gallery-shadow: 0 1.5rem 3.5rem rgba(0, 0, 0, 0.42), 0 0.35rem 0.9rem rgba(0, 0, 0, 0.24);
 }
 
 // SCROLLBAR 

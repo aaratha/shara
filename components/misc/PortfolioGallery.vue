@@ -409,7 +409,7 @@ onBeforeUnmount(() => {
 	&:focus-visible img { transform: scale(1.04); }
 	&:hover,
 	&:focus-visible {
-		box-shadow: 0 1.5rem 3.5rem rgba($black, 0.2), 0 0.35rem 0.9rem rgba($black, 0.12);
+		box-shadow: var(--gallery-shadow);
 	}
 	&:focus-visible { outline: 3px solid $base-color; outline-offset: 3px; }
 }
