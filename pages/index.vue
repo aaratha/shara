@@ -1,7 +1,7 @@
 <template>
 	<main id="main" class="portfolio-home">
 		<header class="portfolio-intro">
-			<p class="portfolio-intro__eyebrow">Selected work</p>
+			<p class="portfolio-intro__eyebrow font-accent text-muted">Selected work</p>
 			<h1>{{ portfolio?.title || 'Portfolio' }}</h1>
 		</header>
 
@@ -21,19 +21,17 @@ if (portfolio.value?.SEOmetaData) {
 
 <style lang="scss" scoped>
 .portfolio-home {
-	padding-block: $spacing7;
+	padding-block: clamp($spacing4, 6vw, $spacing7);
 }
 
 .portfolio-intro {
-	margin: 0 auto $spacing7;
+	margin: 0 auto clamp($spacing4, 6vw, $spacing7);
 	max-width: 72rem;
-	padding-inline: $spacing4;
+	padding-inline: clamp($spacing2, 4vw, $spacing4);
 }
 
 .portfolio-intro__eyebrow {
 	margin: 0 0 $spacing1;
-	color: $grey;
-	font-family: $font-accent;
 	font-size: $font-size8;
 	letter-spacing: 0.14em;
 	text-transform: uppercase;
@@ -49,6 +47,6 @@ h1 {
 :deep(.portfolio-gallery) {
 	margin: 0 auto;
 	max-width: 90rem;
-	padding-inline: $spacing4;
+	padding-inline: clamp($spacing2, 4vw, $spacing4);
 }
 </style>

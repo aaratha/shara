@@ -52,8 +52,24 @@ body {
 	font-family: $font-main;
 }
 
+body {
+	overflow-x: hidden;
+}
+
 body * {
 	box-sizing: border-box;
+}
+
+.font-accent {
+	font-family: $font-accent;
+}
+
+.text-muted {
+	color: $grey;
+}
+
+.text-on-dark {
+	color: $white;
 }
 
 .layout-wrapper {
@@ -71,10 +87,6 @@ body * {
 		grid-row: 2;
 		main {
 			min-height: 100%;
-			padding: $spacing6;
-			@include media(xsm) {
-				padding-inline: $spacing2;
-			}
 			a {
 				color: $base-color;
 			}
@@ -84,5 +96,4 @@ body * {
 		grid-row: 3;
 	}
 }
-
 

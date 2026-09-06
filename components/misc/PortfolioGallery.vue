@@ -7,14 +7,18 @@
 			type="button"
 			@click="selectedImage = image"
 		>
-			<img :src="imageUrl(image, 'f_auto,c_fill,w_1100,h_1100,g_auto,q_auto')" :alt="`Open image ${index + 1}`" loading="lazy">
+			<img
+				:src="imageUrl(image, 'f_auto,w_1100,q_auto')"
+				:alt="`Open image ${index + 1}`"
+				loading="lazy"
+			>
 		</button>
 	</div>
 
 	<div v-if="selectedImage" class="portfolio-lightbox" role="dialog" aria-modal="true" aria-labelledby="portfolio-lightbox-title" @click.self="close">
 		<div class="portfolio-lightbox__content">
 			<h2 id="portfolio-lightbox-title" class="sr-only">Image preview</h2>
-			<button class="portfolio-lightbox__close" type="button" aria-label="Close image preview" @click="close">×</button>
+			<button class="portfolio-lightbox__close text-on-dark" type="button" aria-label="Close image preview" @click="close">×</button>
 			<img :src="imageUrl(selectedImage, 'f_auto,w_2200,q_auto')" alt="Expanded portfolio image">
 		</div>
 	</div>
@@ -47,29 +51,55 @@ const onKeydown = (event) => {
 	if (event.key === 'Escape') close()
 }
 
+watch(selectedImage, (image) => {
+	document.body.classList.toggle('lightbox-open', Boolean(image))
+})
+
 onMounted(() => window.addEventListener('keydown', onKeydown))
-onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
+onBeforeUnmount(() => {
+	window.removeEventListener('keydown', onKeydown)
+	document.body.classList.remove('lightbox-open')
+})
 </script>
 
 <style lang="scss" scoped>
 .portfolio-gallery {
-	display: grid;
-	gap: $spacing2;
-	grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+	column-count: 1;
+	column-gap: $spacing2;
+	width: 100%;
+
+	@include media(xsm) {
+		column-count: 1;
+	}
+
+	@include media(sm) {
+		column-count: 2;
+	}
+
+	@include media(md) {
+		column-count: 3;
+	}
+
+	@include media(lg, xlg) {
+		column-count: 4;
+	}
 }
 
 .portfolio-gallery__item {
+	position: relative;
+	display: block;
+	width: 100%;
+	margin: 0 0 $spacing2;
 	padding: 0;
 	border: 0;
 	background: $light-grey;
 	cursor: zoom-in;
-	overflow: hidden;
+	break-inside: avoid;
 
 	img {
 		display: block;
 		width: 100%;
-		aspect-ratio: 1;
-		object-fit: cover;
+		height: auto;
 		transition: transform 300ms ease;
 	}
 
@@ -84,10 +114,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 	inset: 0;
 	display: grid;
 	place-items: center;
-	padding: clamp(1rem, 5vw, 4rem);
-	background: rgba($black, 0.94);
+	padding: clamp(1rem, 4vw, 3rem);
+	background: rgba($black, 0.58);
+	backdrop-filter: blur(1rem);
 	cursor: zoom-out;
-	overflow: auto;
+	overflow: hidden;
 
 	img {
 		max-width: 100%;
@@ -99,10 +130,27 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 
 .portfolio-lightbox__content {
 	position: relative;
-	display: grid;
-	place-items: center;
-	max-width: min(94vw, 90rem);
-	max-height: 94vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	max-width: 90rem;
+	min-width: 0;
+	min-height: 0;
+	margin: auto;
+
+	img {
+		display: block;
+		flex: 0 1 auto;
+		width: auto;
+		height: auto;
+		max-width: 100%;
+		max-height: 100%;
+		margin: auto;
+		object-fit: contain;
+		cursor: default;
+	}
 }
 
 .portfolio-lightbox__close {
@@ -115,10 +163,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 	border: 1px solid rgba($white, 0.7);
 	border-radius: 50%;
 	background: transparent;
-	color: $white;
 	font-size: 2rem;
 	line-height: 1;
 	cursor: pointer;
+}
+
+:global(body.lightbox-open) {
+	overflow: hidden;
 }
 
 .sr-only {
