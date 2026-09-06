@@ -36,13 +36,18 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 #header {
-	position: relative;
+	position: sticky;
+	z-index: 20;
+	top: 0;
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
+	justify-content: flex-end;
 	gap: $spacing4;
+	width: 100%;
+	box-sizing: border-box;
 	padding: clamp($spacing1, 2vw, $spacing2);
-	background: var(--surface-color);
+	background: color-mix(in srgb, var(--surface-color) 78%, transparent);
+	backdrop-filter: blur(1rem);
 }
 
 #header__logo {
@@ -54,11 +59,19 @@ onMounted(() => {
 	justify-content: flex-end;
 	gap: $spacing1;
 	margin-left: auto;
-	margin-right: clamp($spacing1, 3vw, $spacing4);
+	margin-right: max(
+		0px,
+		calc(
+			(100vw - 90rem) / 2
+			+ clamp($spacing2, 4vw, $spacing4)
+			- clamp($spacing1, 2vw, $spacing2)
+		)
+	);
 }
 
 .header-nav__button {
 	padding: $spacing1 $spacing2;
+	white-space: nowrap;
 	border: 0;
 	background: transparent;
 	color: var(--text-color);
