@@ -1,7 +1,6 @@
 <template>
 	<header id="header">
 		<LayoutLogo />
-		<NavigationMainMenu />
 	</header>
 </template>
 
@@ -10,9 +9,9 @@
 #header {
 	position: relative;
 	display: grid;
-	grid-template-columns: 1fr auto 1fr;
+	grid-template-columns: 1fr;
 	grid-template-rows: 1fr;
-	padding: $spacing2;
+	padding: $spacing4;
 	&::before {
 		position: absolute;
 		content: "";
@@ -36,10 +35,4 @@
 	grid-row: 1;
 }
 
-#main-menu {
-	grid-column: 2;
-	grid-row: 1;
-	align-self: center;
-	justify-self: center;
-}
 </style>
