@@ -562,9 +562,15 @@ onBeforeUnmount(() => {
 }
 
 @include media(xsm) {
+	.portfolio-lightbox__help {
+		width: 100%;
+		bottom: $spacing9;
+		justify-content: center;
+	}
+
 	.portfolio-lightbox__nav {
 		top: auto;
-		bottom: $spacing6;
+		bottom: $spacing9;
 		width: 2.5rem;
 		height: 2.5rem;
 		opacity: 0.75;
