@@ -1,18 +1,20 @@
 <template>
 	<div class="portfolio-gallery">
-		<button
-			v-for="(image, index) in galleryImages"
-			:key="`${image.src}-${index}`"
-			class="portfolio-gallery__item"
-			type="button"
-			@click="selectedImage = image"
-		>
-			<img
-				:src="imageUrl(image.src, 'f_auto,w_1100,q_auto')"
-				:alt="image.alt"
-				loading="lazy"
+		<div v-for="(column, columnIndex) in galleryColumns" :key="columnIndex" class="portfolio-gallery__column">
+			<button
+				v-for="(image, imageIndex) in column"
+				:key="`${image.src}-${imageIndex}`"
+				class="portfolio-gallery__item"
+				type="button"
+				@click="selectedImage = image"
 			>
-		</button>
+				<img
+					:src="imageUrl(image.src, 'f_auto,w_1100,q_auto')"
+					:alt="image.alt"
+					loading="lazy"
+				>
+			</button>
+		</div>
 	</div>
 
 	<div v-if="selectedImage" class="portfolio-lightbox" role="dialog" aria-modal="true" aria-labelledby="portfolio-lightbox-title" @click="handleLightboxClick">
@@ -76,6 +78,16 @@ const imageSource = (image) => {
 const galleryImages = computed(() => props.images
 	.flatMap(imageSource)
 	.filter((image) => image?.src))
+
+const columnCount = ref(1)
+const updateColumnCount = () => {
+	const width = window.innerWidth
+	columnCount.value = width >= 1440 ? 4 : width >= 1024 ? 3 : width >= 768 ? 2 : 1
+}
+const galleryColumns = computed(() => Array.from(
+	{ length: columnCount.value },
+	(_, columnIndex) => galleryImages.value.filter((_, imageIndex) => imageIndex % columnCount.value === columnIndex),
+))
 
 const lightboxContent = ref(null)
 const zoom = ref(1)
@@ -262,8 +274,13 @@ watch(selectedImage, (image) => {
 	if (image) nextTick(resetZoom)
 })
 
-onMounted(() => window.addEventListener('keydown', onKeydown))
+onMounted(() => {
+	updateColumnCount()
+	window.addEventListener('resize', updateColumnCount)
+	window.addEventListener('keydown', onKeydown)
+})
 onBeforeUnmount(() => {
+	window.removeEventListener('resize', updateColumnCount)
 	window.removeEventListener('keydown', onKeydown)
 	document.body.classList.remove('lightbox-open')
 	if (wheelFrame) cancelAnimationFrame(wheelFrame)
@@ -273,33 +290,24 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .portfolio-gallery {
-	display: grid;
-	grid-template-columns: 1fr;
 	gap: $spacing2;
+	display: flex;
 	width: 100%;
+	align-items: flex-start;
+}
 
-	@include media(xsm) {
-		grid-template-columns: 1fr;
-	}
-
-	@include media(sm) {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-
-	@include media(md) {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-	}
-
-	@include media(lg, xlg) {
-		grid-template-columns: repeat(4, minmax(0, 1fr));
-	}
+.portfolio-gallery__column {
+	display: flex;
+	flex: 1 1 0;
+	flex-direction: column;
+	gap: $spacing2;
+	min-width: 0;
 }
 
 .portfolio-gallery__item {
 	display: block;
 	width: 100%;
 	height: fit-content;
-	align-self: start;
 	padding: 0;
 	border: 0;
 	background: $light-grey;
