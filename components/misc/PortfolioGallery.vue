@@ -15,11 +15,11 @@
 		</button>
 	</div>
 
-	<div v-if="selectedImage" class="portfolio-lightbox" role="dialog" aria-modal="true" aria-labelledby="portfolio-lightbox-title" @click.self="close">
-		<div class="portfolio-lightbox__content">
+	<div v-if="selectedImage" class="portfolio-lightbox" role="dialog" aria-modal="true" aria-labelledby="portfolio-lightbox-title" @click="close">
+		<div class="portfolio-lightbox__content" @click.self="close">
 			<h2 id="portfolio-lightbox-title" class="sr-only">Image preview</h2>
 			<button class="portfolio-lightbox__close text-on-dark" type="button" aria-label="Close image preview" @click="close">×</button>
-			<img :src="imageUrl(selectedImage, 'f_auto,w_2200,q_auto')" alt="Expanded portfolio image">
+			<img :src="imageUrl(selectedImage, 'f_auto,w_2200,q_auto')" alt="Expanded portfolio image" @click.stop>
 		</div>
 	</div>
 </template>
@@ -64,37 +64,37 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .portfolio-gallery {
-	column-count: 1;
-	column-gap: $spacing2;
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: $spacing2;
 	width: 100%;
 
 	@include media(xsm) {
-		column-count: 1;
+		grid-template-columns: 1fr;
 	}
 
 	@include media(sm) {
-		column-count: 2;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
 	@include media(md) {
-		column-count: 3;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
 
 	@include media(lg, xlg) {
-		column-count: 4;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
 	}
 }
 
 .portfolio-gallery__item {
-	position: relative;
 	display: block;
 	width: 100%;
-	margin: 0 0 $spacing2;
+	height: fit-content;
+	align-self: start;
 	padding: 0;
 	border: 0;
 	background: $light-grey;
 	cursor: zoom-in;
-	break-inside: avoid;
 
 	img {
 		display: block;
