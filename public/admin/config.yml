@@ -22,10 +22,21 @@ collections:
         fields:
           - name: "images"
             label: "Gallery images"
-            widget: "image"
+            widget: "list"
             required: false
-            hint: "Select and reorder the images in this gallery."
-            choose_url: true
-            media_library:
-              config:
-                multiple: true
+            hint: "Add images and drag them to reorder the gallery."
+            summary: "{{fields.alt}}"
+            fields:
+              - name: "image"
+                label: "Image"
+                widget: "image"
+                choose_url: true
+                required: true
+                media_library:
+                  config:
+                    multiple: false
+              - name: "alt"
+                label: "Image description"
+                widget: "string"
+                required: true
+                hint: "Describe the image for visitors using screen readers."

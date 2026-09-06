@@ -2,14 +2,14 @@
 	<div class="portfolio-gallery">
 		<button
 			v-for="(image, index) in galleryImages"
-			:key="`${image}-${index}`"
+			:key="`${image.src}-${index}`"
 			class="portfolio-gallery__item"
 			type="button"
 			@click="selectedImage = image"
 		>
 			<img
-				:src="imageUrl(image, 'f_auto,w_1100,q_auto')"
-				:alt="`Open image ${index + 1}`"
+				:src="imageUrl(image.src, 'f_auto,w_1100,q_auto')"
+				:alt="image.alt"
 				loading="lazy"
 			>
 		</button>
@@ -29,8 +29,8 @@
 			<h2 id="portfolio-lightbox-title" class="sr-only">Image preview</h2>
 			<button class="portfolio-lightbox__close" type="button" aria-label="Close image preview" @click="close">×</button>
 			<img
-				:src="imageUrl(selectedImage, 'f_auto,w_2200,q_auto')"
-				alt="Expanded portfolio image"
+				:src="imageUrl(selectedImage.src, 'f_auto,w_2200,q_auto')"
+				:alt="selectedImage.alt"
 				:style="previewImageStyle"
 				@click.stop
 			>
@@ -61,16 +61,21 @@ const props = defineProps({
 
 const selectedImage = ref(null)
 const imageSource = (image) => {
-	if (typeof image === 'string') return image
+	if (typeof image === 'string') return { src: image, alt: 'Portfolio image' }
 	if (Array.isArray(image)) return image.flatMap(imageSource)
 	if (!image || typeof image !== 'object') return null
 
-	return imageSource(image.image ?? image.url ?? image.src ?? image.path)
+	const src = image.image ?? image.url ?? image.src ?? image.path
+	if (typeof src === 'string') {
+		return { src, alt: image.alt || 'Portfolio image' }
+	}
+
+	return imageSource(src)
 }
 
 const galleryImages = computed(() => props.images
 	.flatMap(imageSource)
-	.filter(Boolean))
+	.filter((image) => image?.src))
 
 const lightboxContent = ref(null)
 const zoom = ref(1)
