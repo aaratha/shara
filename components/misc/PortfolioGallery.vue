@@ -561,6 +561,12 @@ onBeforeUnmount(() => {
 	opacity: 0.75;
 }
 
+@include media(xsm) {
+	.portfolio-lightbox__nav {
+		opacity: 0.75;
+	}
+}
+
 .portfolio-lightbox__nav--previous {
 	left: $spacing2;
 }
