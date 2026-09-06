@@ -385,7 +385,7 @@ onBeforeUnmount(() => {
 	border: 0;
 	background: $light-grey;
 	cursor: zoom-in;
-	transition: opacity 420ms ease, transform 420ms ease;
+	transition: box-shadow 240ms ease, opacity 420ms ease, transform 420ms ease;
 
 	img {
 		display: block;
@@ -407,6 +407,10 @@ onBeforeUnmount(() => {
 
 	&:hover img,
 	&:focus-visible img { transform: scale(1.04); }
+	&:hover,
+	&:focus-visible {
+		box-shadow: 0 1.5rem 3.5rem rgba($black, 0.2), 0 0.35rem 0.9rem rgba($black, 0.12);
+	}
 	&:focus-visible { outline: 3px solid $base-color; outline-offset: 3px; }
 }
 
