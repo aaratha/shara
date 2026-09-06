@@ -30,13 +30,14 @@ const props = defineProps({
 const selectedImage = ref(null)
 const imageSource = (image) => {
 	if (typeof image === 'string') return image
+	if (Array.isArray(image)) return image.flatMap(imageSource)
 	if (!image || typeof image !== 'object') return null
 
 	return imageSource(image.image ?? image.url ?? image.src ?? image.path)
 }
 
 const galleryImages = computed(() => props.images
-	.map(imageSource)
+	.flatMap(imageSource)
 	.filter(Boolean))
 
 const imageUrl = (url, transformation) => cldDelivery(url, transformation)

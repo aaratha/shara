@@ -22,16 +22,10 @@ collections:
         fields:
           - name: "images"
             label: "Gallery images"
-            widget: "list"
+            widget: "image"
             required: false
-            hint: "Upload multiple images, then drag them into the order used on the homepage."
-            summary: "{{fields.image}}"
-            fields:
-              - name: "image"
-                label: "Image"
-                widget: "image"
-                choose_url: true
-                required: true
-                media_library:
-                  config:
-                    multiple: true
+            hint: "Upload multiple images and drag them into the order used on the homepage."
+            choose_url: true
+            media_library:
+              config:
+                multiple: true
