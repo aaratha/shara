@@ -11,9 +11,12 @@
 		</button>
 	</div>
 
-	<div v-if="selectedImage" class="portfolio-lightbox" role="dialog" aria-modal="true" aria-label="Image preview" @click.self="close">
-		<button class="portfolio-lightbox__close" type="button" aria-label="Close image preview" @click="close">×</button>
-		<img :src="imageUrl(selectedImage, 'f_auto,w_2200,q_auto')" alt="">
+	<div v-if="selectedImage" class="portfolio-lightbox" role="dialog" aria-modal="true" aria-labelledby="portfolio-lightbox-title" @click.self="close">
+		<div class="portfolio-lightbox__content">
+			<h2 id="portfolio-lightbox-title" class="sr-only">Image preview</h2>
+			<button class="portfolio-lightbox__close" type="button" aria-label="Close image preview" @click="close">×</button>
+			<img :src="imageUrl(selectedImage, 'f_auto,w_2200,q_auto')" alt="Expanded portfolio image">
+		</div>
 	</div>
 </template>
 
@@ -76,6 +79,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 	padding: clamp(1rem, 5vw, 4rem);
 	background: rgba($black, 0.94);
 	cursor: zoom-out;
+	overflow: auto;
 
 	img {
 		max-width: 100%;
@@ -85,10 +89,19 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 	}
 }
 
+.portfolio-lightbox__content {
+	position: relative;
+	display: grid;
+	place-items: center;
+	max-width: min(94vw, 90rem);
+	max-height: 94vh;
+}
+
 .portfolio-lightbox__close {
-	position: fixed;
-	top: 1rem;
-	right: 1rem;
+	position: absolute;
+	z-index: 1;
+	top: $spacing2;
+	right: $spacing2;
 	width: 3rem;
 	height: 3rem;
 	border: 1px solid rgba($white, 0.7);
@@ -98,5 +111,17 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 	font-size: 2rem;
 	line-height: 1;
 	cursor: pointer;
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
 }
 </style>

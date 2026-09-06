@@ -21,9 +21,10 @@ collections:
         file: "content/pages/portfolio.md"
         fields:
           - name: "images"
-            label: "Images"
+            label: "Gallery images"
             widget: "list"
             required: false
+            hint: "Upload multiple images, then drag them into the order used on the homepage."
             summary: "{{fields.image}}"
             fields:
               - name: "image"
@@ -33,4 +34,4 @@ collections:
                 required: true
                 media_library:
                   config:
-                    multiple: false
+                    multiple: true
