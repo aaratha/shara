@@ -65,6 +65,7 @@ const pointers = new Map()
 const pinch = reactive({ distance: 0, zoom: 1 })
 const didPan = ref(false)
 let wheelFrame = null
+let settleFrame = null
 let wheelVelocity = 0
 let wheelPoint = { x: 0, y: 0 }
 
@@ -74,7 +75,37 @@ const previewImageStyle = computed(() => ({
 }))
 
 const clampZoom = (value) => Math.min(4, Math.max(1, value))
+const cancelPanSettle = () => {
+	if (settleFrame) cancelAnimationFrame(settleFrame)
+	settleFrame = null
+}
+
+const settlePan = () => {
+	cancelPanSettle()
+	const startX = pan.x
+	const startY = pan.y
+	const startTime = performance.now()
+	const duration = 220
+
+	const animate = (time) => {
+		const progress = Math.min(1, (time - startTime) / duration)
+		const eased = 1 - (1 - progress) ** 3
+		pan.x = startX * (1 - eased)
+		pan.y = startY * (1 - eased)
+		if (progress < 1) {
+			settleFrame = requestAnimationFrame(animate)
+		} else {
+			settleFrame = null
+			pan.x = 0
+			pan.y = 0
+		}
+	}
+
+	settleFrame = requestAnimationFrame(animate)
+}
+
 const resetZoom = () => {
+	cancelPanSettle()
 	zoom.value = 1
 	pan.x = 0
 	pan.y = 0
@@ -85,21 +116,15 @@ const resetZoom = () => {
 }
 
 const applyZoomAtPoint = (pointX, pointY, factor) => {
+	cancelPanSettle()
 	const nextZoom = clampZoom(zoom.value * factor)
 	const zoomFactor = nextZoom / zoom.value
 
-	if (nextZoom < zoom.value) {
-		// Pull the image toward the viewport center as it returns to its original scale.
-		pan.x *= zoomFactor
-		pan.y *= zoomFactor
-	} else {
-		pan.x = pointX - (pointX - pan.x) * zoomFactor
-		pan.y = pointY - (pointY - pan.y) * zoomFactor
-	}
+	pan.x = pointX - (pointX - pan.x) * zoomFactor
+	pan.y = pointY - (pointY - pan.y) * zoomFactor
 	zoom.value = nextZoom
 	if (nextZoom === 1) {
-		pan.x = 0
-		pan.y = 0
+		settlePan()
 	}
 }
 
@@ -221,6 +246,7 @@ onBeforeUnmount(() => {
 	window.removeEventListener('keydown', onKeydown)
 	document.body.classList.remove('lightbox-open')
 	if (wheelFrame) cancelAnimationFrame(wheelFrame)
+	cancelPanSettle()
 })
 </script>
 
