@@ -27,7 +27,7 @@
 			@dblclick.prevent.stop="toggleZoom"
 		>
 			<h2 id="portfolio-lightbox-title" class="sr-only">Image preview</h2>
-			<button class="portfolio-lightbox__close text-on-dark" type="button" aria-label="Close image preview" @click="close">×</button>
+			<button class="portfolio-lightbox__close" type="button" aria-label="Close image preview" @click="close">×</button>
 			<img
 				:src="imageUrl(selectedImage, 'f_auto,w_2200,q_auto')"
 				alt="Expanded portfolio image"
@@ -88,8 +88,14 @@ const applyZoomAtPoint = (pointX, pointY, factor) => {
 	const nextZoom = clampZoom(zoom.value * factor)
 	const zoomFactor = nextZoom / zoom.value
 
-	pan.x = pointX - (pointX - pan.x) * zoomFactor
-	pan.y = pointY - (pointY - pan.y) * zoomFactor
+	if (nextZoom < zoom.value) {
+		// Pull the image toward the viewport center as it returns to its original scale.
+		pan.x *= zoomFactor
+		pan.y *= zoomFactor
+	} else {
+		pan.x = pointX - (pointX - pan.x) * zoomFactor
+		pan.y = pointY - (pointY - pan.y) * zoomFactor
+	}
 	zoom.value = nextZoom
 	if (nextZoom === 1) {
 		pan.x = 0
@@ -295,7 +301,7 @@ onBeforeUnmount(() => {
 	min-width: 0;
 	min-height: 0;
 	margin: auto;
-	overflow: hidden;
+	overflow: visible;
 	touch-action: none;
 
 	img {
@@ -320,13 +326,14 @@ onBeforeUnmount(() => {
 	right: $spacing2;
 	width: 3rem;
 	height: 3rem;
-	border: 1px solid rgba($white, 0.7);
+	border: 0;
 	border-radius: 50%;
-	background: transparent;
-	color: $white;
+	background: rgba($white, 0.85);
+	color: $black;
 	font-size: 2rem;
 	line-height: 1;
 	cursor: pointer;
+	backdrop-filter: blur(1rem);
 	mix-blend-mode: difference;
 }
 
