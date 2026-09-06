@@ -34,6 +34,20 @@
 				:style="previewImageStyle"
 				@click.stop
 			>
+			<p class="portfolio-lightbox__help">
+				<span aria-label="Mouse controls: scroll to zoom and click-drag to move" title="Mouse: scroll to zoom, click-drag to move">
+					<svg viewBox="0 0 24 24" aria-hidden="true">
+						<rect x="7" y="3" width="10" height="18" rx="5" />
+						<path d="M12 7v5m0-5-2 2m2-2 2 2m-2 5-2-2m2 2 2-2" />
+					</svg>
+				</span>
+				<span aria-hidden="true" class="portfolio-lightbox__separator">/</span>
+				<span aria-label="Touch controls: pinch to zoom and drag to move" title="Touch: pinch to zoom, drag to move">
+					<svg viewBox="0 0 24 24" aria-hidden="true">
+						<path d="M8 12V6a1.5 1.5 0 0 1 3 0v5m0-6a1.5 1.5 0 0 1 3 0v7m0-5a1.5 1.5 0 0 1 3 0v6m0-3a1.5 1.5 0 0 1 3 0v5c0 4-2 6-6 6h-2c-3 0-5-2-5-5V9a1.5 1.5 0 0 1 3 0v3" />
+					</svg>
+				</span>
+			</p>
 		</div>
 	</div>
 </template>
@@ -344,6 +358,43 @@ onBeforeUnmount(() => {
 		user-select: none;
 		-webkit-user-drag: none;
 		will-change: transform;
+	}
+}
+
+.portfolio-lightbox__help {
+	position: absolute;
+	bottom: $spacing2;
+	left: 50%;
+	display: flex;
+	gap: $spacing0;
+	margin: 0;
+	color: $white;
+	text-align: center;
+	transform: translateX(-50%);
+	pointer-events: none;
+	mix-blend-mode: difference;
+
+	span {
+		display: grid;
+		place-items: center;
+		width: 1.75rem;
+		height: 1.75rem;
+	}
+
+	.portfolio-lightbox__separator {
+		width: auto;
+		color: currentColor;
+		font-size: $font-size8;
+	}
+
+	svg {
+		width: 1.25rem;
+		height: 1.25rem;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.5;
 	}
 }
 
