@@ -1,17 +1,19 @@
 <template>
-	<div class="portfolio-gallery">
+	<div ref="galleryRoot" class="portfolio-gallery">
 		<div v-for="(column, columnIndex) in galleryColumns" :key="columnIndex" class="portfolio-gallery__column">
 			<button
 				v-for="(image, imageIndex) in column"
 				:key="`${image.src}-${imageIndex}`"
 				class="portfolio-gallery__item"
+				:data-image-src="image.src"
 				type="button"
 				@click="selectedImage = image"
 			>
 				<img
-					:src="imageUrl(image.src, 'f_auto,w_1100,q_auto')"
+					:src="requestedImages.has(image.src) ? imageUrl(image.src, 'f_auto,w_1100,q_auto') : undefined"
 					:alt="image.alt"
-					loading="lazy"
+					:class="{ 'is-loaded': loadedImages.has(image.src) }"
+					@load="markImageLoaded(image.src)"
 				>
 			</button>
 		</div>
@@ -95,6 +97,32 @@ const galleryColumns = computed(() => Array.from(
 	{ length: columnCount.value },
 	(_, columnIndex) => galleryImages.value.filter((_, imageIndex) => imageIndex % columnCount.value === columnIndex),
 ))
+
+const loadedImages = ref(new Set())
+const requestedImages = ref(new Set())
+const imageLoadTimers = new Set()
+const markImageLoaded = (src) => {
+	loadedImages.value = new Set(loadedImages.value).add(src)
+}
+const galleryRoot = ref(null)
+let galleryObserver = null
+const requestImage = (src) => {
+	if (requestedImages.value.has(src)) return
+	const timer = window.setTimeout(() => {
+		requestedImages.value = new Set(requestedImages.value).add(src)
+		imageLoadTimers.delete(timer)
+	}, 180)
+	imageLoadTimers.add(timer)
+}
+const observeGalleryImages = () => {
+	galleryObserver?.disconnect()
+	galleryObserver = new IntersectionObserver((entries) => {
+		entries.forEach((entry) => {
+			if (entry.isIntersecting) requestImage(entry.target.dataset.imageSrc)
+		})
+	}, { rootMargin: '200px 0px' })
+	galleryRoot.value?.querySelectorAll('.portfolio-gallery__item').forEach((item) => galleryObserver.observe(item))
+}
 
 const lightboxContent = ref(null)
 const zoom = ref(1)
@@ -316,10 +344,14 @@ watch(selectedImage, (image) => {
 
 onMounted(() => {
 	updateColumnCount()
+	nextTick(observeGalleryImages)
 	window.addEventListener('resize', updateColumnCount)
 	window.addEventListener('keydown', onKeydown)
 })
 onBeforeUnmount(() => {
+	galleryObserver?.disconnect()
+	imageLoadTimers.forEach((timer) => window.clearTimeout(timer))
+	imageLoadTimers.clear()
 	window.removeEventListener('resize', updateColumnCount)
 	window.removeEventListener('keydown', onKeydown)
 	document.body.classList.remove('lightbox-open')
@@ -348,16 +380,29 @@ onBeforeUnmount(() => {
 	display: block;
 	width: 100%;
 	height: fit-content;
+	min-height: 12rem;
 	padding: 0;
 	border: 0;
 	background: $light-grey;
 	cursor: zoom-in;
+	transition: opacity 420ms ease, transform 420ms ease;
 
 	img {
 		display: block;
 		width: 100%;
 		height: auto;
 		transition: transform 300ms ease;
+	}
+
+	&:not(:has(img.is-loaded)) {
+		opacity: 0;
+		transform: translateY($spacing1);
+	}
+
+	&:has(img.is-loaded) {
+		min-height: 0;
+		opacity: 1;
+		transform: translateY(0);
 	}
 
 	&:hover img,
