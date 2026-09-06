@@ -17,7 +17,7 @@
 		</div>
 	</div>
 
-	<div v-if="selectedImage" class="portfolio-lightbox" role="dialog" aria-modal="true" aria-labelledby="portfolio-lightbox-title" @click="handleLightboxClick">
+	<div v-if="selectedImage" class="portfolio-lightbox" role="dialog" aria-modal="true" aria-labelledby="portfolio-lightbox-title" @click="handleBackdropClick">
 		<div
 			ref="lightboxContent"
 			class="portfolio-lightbox__content"
@@ -26,16 +26,23 @@
 			@pointermove="movePan"
 			@pointerup="endPan"
 			@pointercancel="endPan"
-			@dblclick.prevent.stop="toggleZoom"
+			@dblclick.prevent.stop="handleDoubleClick"
+			@click.stop="handleBackdropClick"
 		>
 			<h2 id="portfolio-lightbox-title" class="sr-only">Image preview</h2>
-			<button class="portfolio-lightbox__close" type="button" aria-label="Close image preview" @click="close">×</button>
-			<img
-				:src="imageUrl(selectedImage.src, 'f_auto,w_2200,q_auto')"
-				:alt="selectedImage.alt"
-				:style="previewImageStyle"
-				@click.stop
-			>
+			<button class="portfolio-lightbox__close" type="button" aria-label="Close image preview" @pointerdown.stop @pointerup.stop @click.stop.prevent="close">×</button>
+			<button class="portfolio-lightbox__nav portfolio-lightbox__nav--previous" type="button" aria-label="Previous image" @pointerdown.stop @pointerup.stop @click.stop.prevent="showPrevious">‹</button>
+			<button class="portfolio-lightbox__nav portfolio-lightbox__nav--next" type="button" aria-label="Next image" @pointerdown.stop @pointerup.stop @click.stop.prevent="showNext">›</button>
+			<Transition name="portfolio-lightbox-image">
+				<img
+					:key="selectedImage.src"
+					:src="imageUrl(selectedImage.src, 'f_auto,w_2200,q_auto')"
+					:alt="selectedImage.alt"
+					:style="previewImageStyle"
+					class="portfolio-lightbox__image"
+					@click.stop
+				>
+			</Transition>
 			<p class="portfolio-lightbox__help">
 				<span aria-label="Mouse controls: scroll to zoom and click-drag to move" title="Mouse: scroll to zoom, click-drag to move">
 					<svg viewBox="0 0 24 24" aria-hidden="true">
@@ -137,10 +144,13 @@ const settlePan = () => {
 
 const resetZoom = () => {
 	cancelPanSettle()
+	if (wheelFrame) cancelAnimationFrame(wheelFrame)
+	wheelFrame = null
 	zoom.value = 1
 	pan.x = 0
 	pan.y = 0
 	pinch.distance = 0
+	pinch.zoom = 1
 	wheelVelocity = 0
 	didPan.value = false
 	pointers.clear()
@@ -213,6 +223,11 @@ const toggleZoom = (event) => {
 	pan.y = -pointY
 }
 
+const handleDoubleClick = (event) => {
+	if (event.target.closest('button')) return
+	toggleZoom(event)
+}
+
 const distanceBetween = (first, second) => Math.hypot(first.clientX - second.clientX, first.clientY - second.clientY)
 
 const startPan = (event) => {
@@ -257,22 +272,47 @@ const endPan = (event) => {
 
 const imageUrl = (url, transformation) => cldDelivery(url, transformation)
 const close = () => { selectedImage.value = null }
-const handleLightboxClick = () => {
+const showImage = (offset) => {
+	const currentIndex = galleryImages.value.findIndex((image) => image.src === selectedImage.value?.src)
+	if (currentIndex === -1) return
+	const nextImage = galleryImages.value[(currentIndex + offset + galleryImages.value.length) % galleryImages.value.length]
+	resetZoom()
+	selectedImage.value = nextImage
+}
+const showPrevious = () => showImage(-1)
+const showNext = () => showImage(1)
+const preloadAdjacentImages = () => {
+	if (!import.meta.client || !selectedImage.value) return
+	const currentIndex = galleryImages.value.findIndex((image) => image.src === selectedImage.value.src)
+	if (currentIndex === -1) return
+
+	;[-1, 1].forEach((offset) => {
+		const image = galleryImages.value[(currentIndex + offset + galleryImages.value.length) % galleryImages.value.length]
+		const preload = new Image()
+		preload.src = imageUrl(image.src, 'f_auto,w_2200,q_auto')
+	})
+}
+const handleBackdropClick = (event) => {
 	if (didPan.value) {
 		didPan.value = false
 		return
 	}
+
+	if (event.target !== event.currentTarget) return
 	close()
 }
 
 const onKeydown = (event) => {
 	if (event.key === 'Escape') close()
+	if (event.key === 'ArrowLeft') showPrevious()
+	if (event.key === 'ArrowRight') showNext()
 }
 
 watch(selectedImage, (image) => {
 	document.body.classList.toggle('lightbox-open', Boolean(image))
-	if (image) nextTick(resetZoom)
-})
+	resetZoom()
+	if (image) nextTick(preloadAdjacentImages)
+}, { flush: 'sync' })
 
 onMounted(() => {
 	updateColumnCount()
@@ -374,6 +414,20 @@ onBeforeUnmount(() => {
 	}
 }
 
+.portfolio-lightbox-image-enter-active,
+.portfolio-lightbox-image-leave-active {
+	transition: opacity 220ms ease;
+}
+
+.portfolio-lightbox-image-enter-active {
+	position: absolute;
+}
+
+.portfolio-lightbox-image-enter-from,
+.portfolio-lightbox-image-leave-to {
+	opacity: 0;
+}
+
 .portfolio-lightbox__help {
 	position: absolute;
 	bottom: $spacing2;
@@ -427,6 +481,43 @@ onBeforeUnmount(() => {
 	cursor: pointer;
 	backdrop-filter: blur(1rem);
 	mix-blend-mode: difference;
+}
+
+.portfolio-lightbox__nav {
+	position: absolute;
+	z-index: 1;
+	top: 50%;
+	width: 3rem;
+	height: 3rem;
+	border: 0;
+	border-radius: 50%;
+	background: transparent;
+	color: $white;
+	font-size: 2.5rem;
+	line-height: 1;
+	cursor: pointer;
+	opacity: 0;
+	transform: translateY(-50%);
+	transition: opacity 180ms ease;
+	mix-blend-mode: difference;
+
+	&:focus-visible,
+	&:hover {
+		opacity: 1;
+	}
+}
+
+.portfolio-lightbox:hover .portfolio-lightbox__nav,
+.portfolio-lightbox:focus-within .portfolio-lightbox__nav {
+	opacity: 0.75;
+}
+
+.portfolio-lightbox__nav--previous {
+	left: $spacing2;
+}
+
+.portfolio-lightbox__nav--next {
+	right: $spacing2;
 }
 
 :global(body.lightbox-open) {
