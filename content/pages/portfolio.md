@@ -19,6 +19,12 @@ images:
     alt: Radial sample image
   - image: https://res.cloudinary.com/ittlbjso/image/upload/v1788649521/samples/dessert-on-a-plate.jpg
     alt: food
+  - image: https://res.cloudinary.com/ittlbjso/image/upload/v1788649520/samples/man-on-a-escalator.jpg
+    alt: escalator
+  - image: https://res.cloudinary.com/ittlbjso/image/upload/v1788649515/samples/landscapes/nature-mountains.jpg
+    alt: nature
+  - image: https://res.cloudinary.com/ittlbjso/image/upload/v1788649513/samples/animals/three-dogs.jpg
+    alt: dogs
 SEOmetaData:
   metaTitle: Shara Portfolio
   metaDescription: A selection of work by Shara.
