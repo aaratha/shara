@@ -7,9 +7,17 @@
 				type="button"
 				class="header-nav__button"
 				:aria-pressed="darkMode"
+				:aria-label="darkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+				:title="darkMode ? 'Switch to light mode' : 'Switch to dark mode'"
 				@click="toggleDarkMode"
 			>
-				{{ darkMode ? 'Light' : 'Dark' }}
+				<svg v-if="darkMode" viewBox="0 0 24 24" aria-hidden="true">
+					<circle cx="12" cy="12" r="4" />
+					<path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+				</svg>
+				<svg v-else viewBox="0 0 24 24" aria-hidden="true">
+					<path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z" />
+				</svg>
 			</button>
 		</nav>
 	</header>
@@ -78,6 +86,17 @@ onMounted(() => {
 	font-family: $font-main;
 	font-size: $font-size7;
 	cursor: pointer;
+
+	svg {
+		display: block;
+		width: 1.25rem;
+		height: 1.25rem;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.5;
+	}
 
 	&:hover,
 	&:focus-visible {

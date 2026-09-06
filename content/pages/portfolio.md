@@ -1,5 +1,5 @@
 ---
-title: Shara
+title: Yashara Abeysinghe
 images:
   - image: https://res.cloudinary.com/ittlbjso/image/upload/v1788649523/main-sample.png
     alt: Main sample image
