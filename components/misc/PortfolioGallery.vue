@@ -385,7 +385,7 @@ onBeforeUnmount(() => {
 	border: 0;
 	background: $light-grey;
 	cursor: zoom-in;
-	transition: box-shadow 240ms ease, opacity 420ms ease, transform 420ms ease;
+	transition: box-shadow 240ms ease, opacity 800ms ease, transform 1200ms cubic-bezier(0.16, 1, 0.3, 1);
 
 	img {
 		display: block;
@@ -396,7 +396,7 @@ onBeforeUnmount(() => {
 
 	&:not(:has(img.is-loaded)) {
 		opacity: 0;
-		transform: translateY($spacing1);
+		transform: translateY(12rem);
 	}
 
 	&:has(img.is-loaded) {
