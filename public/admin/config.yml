@@ -24,7 +24,7 @@ collections:
             label: "Gallery images"
             widget: "image"
             required: false
-            hint: "Upload multiple images and drag them into the order used on the homepage."
+            hint: "Select and reorder the images in this gallery."
             choose_url: true
             media_library:
               config:
